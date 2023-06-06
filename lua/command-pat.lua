@@ -54,14 +54,39 @@ local function operateOnSelection(selection_text)
     local line_count = api.nvim_buf_line_count(0)
     local lines = api.nvim_buf_get_lines(0, 0, line_count, true)
 
-   -- Check for all occurences with pattern and run command on them
-    for line_idx, line in ipairs(lines) do
-      local pattern_start_idx = string.find(line, selection_text)
+    local ns = api.nvim_create_namespace('command-pat')
 
-      if pattern_start_idx then
-        api.nvim_win_set_cursor(0, { line_idx, pattern_start_idx - 1 })
-        norm_command(cmd)
+   -- Check for all occurences with pattern and run command on them
+    for line_index, line in ipairs(lines) do
+      local pattern_start_idx = 0
+      while true do
+        pattern_start_idx = string.find(line, selection_text, pattern_start_idx + 1)
+
+        if pattern_start_idx then
+          api.nvim_buf_set_extmark(0, ns, line_index - 1, pattern_start_idx - 1, {})
+        else
+          break
+        end
       end
+    end
+
+    -- Get all exmtmarks and loop
+    local extmarks = api.nvim_buf_get_extmarks(0, ns, 0, -1, {})
+    for _, extmark in ipairs(extmarks) do
+      local ext_id = extmark[1]
+      extmark = api.nvim_buf_get_extmark_by_id(0, ns, ext_id, {})
+      local ext_line = extmark[1]
+      local ext_col = extmark[2]
+
+      if vim.g['command_pat_debug'] == 1 then
+        show("Ext Id: " .. ext_id)
+        show("Ext line: " .. ext_line)
+        show("Ext col: " .. ext_col)
+      end
+
+      api.nvim_win_set_cursor(0, { ext_line + 1, ext_col })
+      api.nvim_buf_del_extmark(0, ns, ext_id)
+      norm_command(cmd)
     end
 
     clear_cmdline()
