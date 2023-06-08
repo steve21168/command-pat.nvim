@@ -10,6 +10,15 @@ local function clear_cmdline()
   vim.cmd([[redraw | echo '']])
 end
 
+local function clear_extmarks(ns)
+  local extmarks = api.nvim_buf_get_extmarks(0, ns, 0, -1, {})
+
+  for _, extmark in ipairs(extmarks) do
+    local ext_id = extmark[1]
+    api.nvim_buf_del_extmark(0, ns, ext_id)
+  end
+end
+
 local function get_visual_selection()
   local left_pos = api.nvim_buf_get_mark(0, '<')
   local start_row = left_pos[1] - 1
@@ -86,6 +95,7 @@ local function operateOnSelection(ns)
   vim.ui.input({ prompt = "Enter norm command: " }, function(cmd)
     if cmd == "" or cmd == nil then
       clear_cmdline()
+      clear_extmarks(ns)
       return
     end
 
