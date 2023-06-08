@@ -46,7 +46,7 @@ end
 
 local function operateOnSelection(selection_text)
   vim.ui.input({ prompt = "Enter norm command: " }, function(cmd)
-    if cmd == "" then
+    if cmd == "" or cmd == nil then
       clear_cmdline()
       return
     end
