@@ -2,7 +2,7 @@
 
 ## Description
 
-Inspired by Vims global command + normal commands. Like Vim's global command, command-pat iterates through each line looking for a pattern.  With command-pat the patten is inputted via visual selection or by cword under cursor.  After searching the pattern you are prompted for a normal command and this is executed at each pattern.  This is distinct from the global command which is executed at the beginning of each line where each pattern occurs.
+Inspired by Vims global command + normal commands. Like Vim's global command, command-pat iterates through each line looking for a pattern.  With command-pat the patten is inputted via cword under cursor, visual selection or by a pattern itself.  After searching the pattern you are prompted for a normal command and this is executed at the start of each pattern.  This is distinct from the global command which executes at the beginning of each line where the pattern occurs.
 
 ## Example
 Given text
@@ -31,12 +31,12 @@ Foo
 
 other line
 
-Bar Foo
+bar Foo
 ```
 
-## Recommended mapping
+## Functions to map
 ```
-nnoremap <leader>d :lua require('command-pat').OperateOnNSelection()<CR>
-vnoremap <leader>d :lua require('command-pat').OperateOnVSelection()<CR>
+:lua require('command-pat').OperateOnPattern()<CR> -- Map in any mode
+:lua require('command-pat').OperateOnNSelection()<CR> -- Map in normal mode
+:lua require('command-pat').OperateOnVSelection()<CR> -- Map in visual mode
 ```
-
